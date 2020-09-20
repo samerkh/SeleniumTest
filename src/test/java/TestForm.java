@@ -1,4 +1,3 @@
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -33,12 +32,13 @@ public class TestForm {
     public void testNumberField(){
         WebElement numberField = browser.findElement(By.xpath("//*[@placeholder=\"Number must be between 1 ~ 10\"]"));
 
-        numberField.sendKeys("5");
-        Assertions.assertEquals(browser.findElements(By.xpath("//*[text()=\"Number must be between 1 ~ 10\"]")).size(),0);
-
         numberField.sendKeys("50");
         Assertions.assertNotEquals(browser.findElements(By.xpath("//*[text()=\"Number must be between 1 ~ 10\"]")).size(),0);
 
+        numberField.clear();
+
+        numberField.sendKeys("5");
+        Assertions.assertEquals(browser.findElements(By.xpath("//*[text()=\"Number must be between 1 ~ 10\"]")).size(),0);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestForm {
         WebElement textRequired = browser.findElement(By.xpath("//*[@placeholder=\"Enter your answer\"]"));
         WebElement submitBtn = browser.findElement(By.xpath("//button//div[text()=\"Submit\"]"));
 
-        textRequired.sendKeys("");
+        textRequired.clear();
         submitBtn.click();
         Assertions.assertNotEquals(browser.findElements(By.xpath("//*[text()=\"This question is required.\"]")).size(),0);
 

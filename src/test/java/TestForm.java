@@ -18,34 +18,43 @@ public class TestForm {
         System.setProperty("webdriver.chrome.driver","C:\\Users\\Samer\\Desktop\\PSEU\\Basel\\chromedriver_win32\\chromedriver.exe");
 
         browser = new ChromeDriver();
-        browser.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+        browser.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         browser.get("https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__tQlYTdURExDM0ZZQVBZQzIyRjQzMjNMTFk3RTYzMy4u");
     }
 
     @Test
     public void testCheckbox(){
-        WebElement checkBox1 = browser.findElement(By.xpath("//*[@id=\"form-container\"]/div/div/div[1]/div/div[1]/div[2]/div[2]/div[1]/div[2]/div[3]/div/div[1]/div/label/input"));
-        checkBox1.click();
-
+        WebElement checkBox = browser.findElement(By.xpath("//input[@value=\"Option 1\" and @type=\"checkbox\"]"));
+        checkBox.click();
+        Assertions.assertTrue(checkBox.isSelected());
     }
 
     @Test
     public void testNumberField(){
-        WebElement numberField = browser.findElement(By.xpath("//*[@id=\"form-container\"]/div/div/div/div/div[2]/div[2]/div[2]/div/div[2]/div/div/input"));
-        numberField.sendKeys("100");
-        WebElement errMsg = browser.findElement(By.linkText("Number must be between 1 ~ 10"));
-        Assertions.assertTrue(errMsg.isDisplayed());
+        WebElement numberField = browser.findElement(By.xpath("//*[@placeholder=\"Number must be between 1 ~ 10\"]"));
+
+        numberField.sendKeys("5");
+        Assertions.assertEquals(browser.findElements(By.xpath("//*[text()=\"Number must be between 1 ~ 10\"]")).size(),0);
+
+        numberField.sendKeys("50");
+        Assertions.assertNotEquals(browser.findElements(By.xpath("//*[text()=\"Number must be between 1 ~ 10\"]")).size(),0);
+
     }
 
     @Test
     public void testRequired(){
-        WebElement textRequired = browser.findElement(By.xpath("//*[@id=\"form-container\"]/div/div/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div[3]/div/div/div/input"));
+        WebElement textRequired = browser.findElement(By.xpath("//*[@placeholder=\"Enter your answer\"]"));
+        WebElement submitBtn = browser.findElement(By.xpath("//button//div[text()=\"Submit\"]"));
+
         textRequired.sendKeys("");
+        submitBtn.click();
+        Assertions.assertNotEquals(browser.findElements(By.xpath("//*[text()=\"This question is required.\"]")).size(),0);
 
-        WebElement submitBtn = browser.findElement(By.xpath("//*[@id=\"form-container\"]/div/div/div/div/div[2]/div[3]/div[1]/button/div"));
-        WebElement requiredText = browser.findElement(By.linkText("This question is required."));
+        textRequired.sendKeys("hello");
+        Assertions.assertEquals(browser.findElements(By.xpath("//*[text()=\"This question is required.\"]")).size(),0);
 
-        Assertions.assertTrue(requiredText.isDisplayed());
+        submitBtn.click();
+        Assertions.assertNotEquals(browser.findElements(By.xpath("//div[@class=\"thank-you-page-root-container\"]")).size(),0);
     }
 
     @AfterEach
